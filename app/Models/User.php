@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -21,6 +23,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role_id',
+        'is_active',
     ];
 
     /**
@@ -43,6 +47,52 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
+    }
+
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function createdPurchaseOrders(): HasMany
+    {
+        return $this->hasMany(PurchaseOrder::class, 'created_by');
+    }
+
+    public function approvedPurchaseOrders(): HasMany
+    {
+        return $this->hasMany(PurchaseOrder::class, 'approved_by');
+    }
+
+    public function createdSalesOrders(): HasMany
+    {
+        return $this->hasMany(SalesOrder::class, 'created_by');
+    }
+
+    public function approvedSalesOrders(): HasMany
+    {
+        return $this->hasMany(SalesOrder::class, 'approved_by');
+    }
+
+    public function createdGoodReceiptNotes(): HasMany
+    {
+        return $this->hasMany(GoodReceiptNote::class, 'created_by');
+    }
+
+    public function approvedGoodReceiptNotes(): HasMany
+    {
+        return $this->hasMany(GoodReceiptNote::class, 'approved_by');
+    }
+
+    public function createdDeliveries(): HasMany
+    {
+        return $this->hasMany(Delivery::class, 'created_by');
+    }
+
+    public function approvedDeliveries(): HasMany
+    {
+        return $this->hasMany(Delivery::class, 'approved_by');
     }
 }
