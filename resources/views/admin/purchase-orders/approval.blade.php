@@ -13,7 +13,7 @@
             <div class="flex items-center space-x-2">
                 <div class="px-4 py-2 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
                     <p class="text-sm font-medium text-yellow-800 dark:text-yellow-300">
-                        <span class="font-bold text-2xl">{{ $purchaseOrders->total() }}</span> Pending
+                        <span class="font-bold text-2xl" id="pendingCount">{{ $pendingCount }}</span> Pending
                     </p>
                 </div>
             </div>
@@ -21,9 +21,18 @@
 
         <!-- Filter Card -->
         <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search PO Number</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
+                    <select id="filterStatus" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="pending" selected>Pending Only</option>
+                        <option value="">All Status</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PO Number</label>
                     <input type="text" id="filterPONumber" placeholder="PO-2024-00001"
                         class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
@@ -41,6 +50,12 @@
                     <button onclick="applyFilters()"
                         class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200">
                         Apply Filters
+                    </button>
+                </div>
+                <div class="flex items-end">
+                    <button onclick="resetFilters()"
+                        class="w-full px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors duration-200">
+                        Reset
                     </button>
                 </div>
             </div>
@@ -66,7 +81,7 @@
         <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg overflow-hidden">
             <div class="p-6">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <table id="approvalTable" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gray-50 dark:bg-gray-700">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -88,6 +103,9 @@
                                     Total Amount
                                 </th>
                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Status
+                                </th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Priority
                                 </th>
                                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -95,159 +113,92 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            @forelse($purchaseOrders as $po)
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 {{ $po->total_amount >= 50000000 ? 'bg-red-50 dark:bg-red-900/10' : '' }}">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div>
-                                                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                    {{ $po->po_number }}
-                                                </div>
-                                                <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                    {{ $po->created_at->diffForHumans() }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                                        {{ \Carbon\Carbon::parse($po->po_date)->format('d M Y') }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900 dark:text-gray-100">{{ $po->supplier->name }}</div>
-                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ $po->supplier->code }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                                        {{ $po->warehouse->name }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-8 w-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                                                <span class="text-sm font-medium text-blue-800 dark:text-blue-300">
-                                                    {{ strtoupper(substr($po->creator->name, 0, 2)) }}
-                                                </span>
-                                            </div>
-                                            <div class="ml-3">
-                                                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                    {{ $po->creator->name }}
-                                                </div>
-                                                <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                    {{ $po->creator->email }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right">
-                                        <div class="text-sm font-bold text-gray-900 dark:text-gray-100">
-                                            Rp {{ number_format($po->total_amount, 0, ',', '.') }}
-                                        </div>
-                                        @if($po->total_amount >= 10000000)
-                                            <div class="text-xs text-yellow-600 dark:text-yellow-400">
-                                                Requires Approval
-                                            </div>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        @if($po->total_amount >= 50000000)
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
-                                                🔥 Critical
-                                            </span>
-                                        @elseif($po->total_amount >= 25000000)
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300">
-                                                ⚡ High
-                                            </span>
-                                        @else
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
-                                                📋 Normal
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <div class="flex justify-end space-x-2">
-                                            <!-- View/Review Button -->
-                                            <a href="{{ route('admin.purchase-orders.show', $po) }}"
-                                                class="inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors duration-200">
-                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                                </svg>
-                                                Review
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="8" class="px-6 py-12 text-center">
-                                        <div class="flex flex-col items-center">
-                                            <svg class="h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">No pending purchase orders for approval</p>
-                                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">All purchase orders have been processed</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
                     </table>
                 </div>
-
-                <!-- Pagination -->
-                @if($purchaseOrders->hasPages())
-                    <div class="mt-4">
-                        {{ $purchaseOrders->links() }}
-                    </div>
-                @endif
             </div>
         </div>
 
-        <!-- Statistics Card -->
-        @if($purchaseOrders->total() > 0)
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 shadow-sm sm:rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Quick Statistics</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Total Pending Amount</p>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                            Rp {{ number_format($purchaseOrders->sum('total_amount'), 0, ',', '.') }}
-                        </p>
-                    </div>
-                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Average PO Value</p>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                            Rp {{ number_format($purchaseOrders->avg('total_amount'), 0, ',', '.') }}
-                        </p>
-                    </div>
-                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
-                        <p class="text-sm text-gray-600 dark:text-gray-400">High Priority (≥ 25M)</p>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                            {{ $purchaseOrders->where('total_amount', '>=', 25000000)->count() }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        @endif
     </div>
 
     @push('scripts')
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
     <script>
+        let table;
+
+        $(document).ready(function() {
+            // Initialize DataTable
+            table = $('#approvalTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ route('admin.purchase-orders.approval') }}",
+                    data: function(d) {
+                        d.status = $('#filterStatus').val();
+                        d.po_number = $('#filterPONumber').val();
+                        d.supplier = $('#filterSupplier').val();
+                        d.min_amount = $('#filterMinAmount').val();
+                    }
+                },
+                columns: [
+                    { data: 'po_info', name: 'po_number' },
+                    { data: 'po_date', name: 'po_date' },
+                    { data: 'supplier_info', name: 'supplier.name' },
+                    { data: 'warehouse_name', name: 'warehouse.name' },
+                    { data: 'creator_info', name: 'creator.name' },
+                    { data: 'total_amount', name: 'total_amount', className: 'text-right' },
+                    { data: 'status', name: 'status', className: 'text-center' },
+                    { data: 'priority', name: 'priority', orderable: false, searchable: false, className: 'text-center' },
+                    { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-right' }
+                ],
+                order: [[5, 'desc']], // Order by amount descending (high value first)
+                pageLength: 10,
+                language: {
+                    emptyTable: `
+                        <div class="py-12 text-center">
+                            <div class="flex flex-col items-center">
+                                <svg class="h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">No purchase orders found</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Try adjusting your filters</p>
+                            </div>
+                        </div>
+                    `
+                },
+                rowCallback: function(row, data) {
+                    // Highlight high-value POs
+                    if (data.total_amount && data.total_amount.includes('50,000,000')) {
+                        $(row).addClass('bg-red-50 dark:bg-red-900/10');
+                    }
+                }
+            });
+        });
+
+        // Filter function
         function applyFilters() {
-            const poNumber = document.getElementById('filterPONumber').value;
-            const supplier = document.getElementById('filterSupplier').value;
-            const minAmount = document.getElementById('filterMinAmount').value;
+            table.ajax.reload();
+        }
 
-            let url = new URL(window.location.href);
-            url.searchParams.set('po_number', poNumber);
-            url.searchParams.set('supplier', supplier);
-            url.searchParams.set('min_amount', minAmount);
-
-            window.location.href = url.toString();
+        // Reset filters
+        function resetFilters() {
+            $('#filterStatus').val('pending');
+            $('#filterPONumber').val('');
+            $('#filterSupplier').val('');
+            $('#filterMinAmount').val('');
+            table.ajax.reload();
         }
 
         // Auto-refresh every 5 minutes to catch new approvals
-        setTimeout(function() {
-            location.reload();
+        setInterval(function() {
+            table.ajax.reload(null, false); // Reload without resetting pagination
         }, 300000);
     </script>
     @endpush
