@@ -11,9 +11,10 @@ class Warehouse extends Model
     use HasFactory;
 
     protected $fillable = [
-        'warehouse_code',
+        'code',
         'name',
-        'location',
+        'address',
+        'phone',
         'is_active',
     ];
 

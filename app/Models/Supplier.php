@@ -11,7 +11,7 @@ class Supplier extends Model
     use HasFactory;
 
     protected $fillable = [
-        'supplier_code',
+        'code',
         'name',
         'contact_person',
         'phone',
