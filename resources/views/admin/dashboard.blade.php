@@ -1,22 +1,16 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Admin Dashboard') }}
-        </h2>
-    </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Welcome Message -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-2xl font-bold mb-2">Welcome back, {{ Auth::user()->name }}!</h3>
-                    <p class="text-gray-600 dark:text-gray-400">Here's what's happening with your warehouse management system today.</p>
-                </div>
+    <div class="space-y-6">
+        <!-- Welcome Message -->
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6 text-gray-900 dark:text-gray-100">
+                <h3 class="text-2xl font-bold mb-2">Welcome back, {{ Auth::user()->name }}!</h3>
+                <p class="text-gray-600 dark:text-gray-400">Here's what's happening with your warehouse management system today.</p>
             </div>
+        </div>
 
             <!-- Master Data Statistics -->
-            <div class="mb-6">
+            <div>
                 <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Master Data</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- Items -->
@@ -94,7 +88,7 @@
             </div>
 
             <!-- Pending Approvals -->
-            <div class="mb-6">
+            <div>
                 <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Pending Approvals</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- Purchase Orders -->
@@ -150,7 +144,7 @@
                                             <p class="text-sm text-gray-600 dark:text-gray-400">{{ $po->supplier->name }}</p>
                                         </div>
                                         <div class="text-right">
-                                            <span class="px-2 py-1 text-xs rounded-full 
+                                            <span class="px-2 py-1 text-xs rounded-full
                                                 @if($po->status === 'approved') bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300
                                                 @elseif($po->status === 'pending') bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300
                                                 @elseif($po->status === 'rejected') bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300
@@ -182,7 +176,7 @@
                                             <p class="text-sm text-gray-600 dark:text-gray-400">{{ $so->customer->name }}</p>
                                         </div>
                                         <div class="text-right">
-                                            <span class="px-2 py-1 text-xs rounded-full 
+                                            <span class="px-2 py-1 text-xs rounded-full
                                                 @if($so->status === 'approved') bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300
                                                 @elseif($so->status === 'pending') bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300
                                                 @elseif($so->status === 'rejected') bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300
