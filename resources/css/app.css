@@ -1,3 +1,34 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Perbaiki warna teks tabel di dark mode */
+.dark table.dataTable td,
+.dark table.dataTable th {
+  color: #e5e7eb !important; /* text-gray-200 */
+}
+
+/* Tambahan opsional: hover effect */
+.dark table.dataTable tbody tr:hover {
+  background-color: #374151 !important; /* bg-gray-700 */
+}
+/* Text default DataTables di dark mode */
+.dark .dataTables_info,
+.dark .dataTables_paginate,
+.dark .dataTables_length label,
+.dark .dataTables_filter label {
+  color: #e5e7eb !important; /* text-gray-200 */
+}
+
+/* Pagination link warna */
+.dark .dataTables_wrapper .dataTables_paginate .paginate_button {
+  color: #d1d5db !important; /* text-gray-300 */
+}
+
+/* Pagination aktif dan hover state */
+.dark .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dark .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: #374151 !important; /* bg-gray-700 */
+  color: #f9fafb !important; /* text-gray-50 */
+  border-color: #4b5563 !important; /* border-gray-600 */
+}
