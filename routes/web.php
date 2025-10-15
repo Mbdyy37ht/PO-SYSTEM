@@ -74,7 +74,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [StaffDashboardController::class, 'index'])->name('dashboard');
         
         Route::resource('purchase-orders', StaffPurchaseOrderController::class);
-        Route::post('purchase-orders/{purchaseOrder}/submit', [StaffPurchaseOrderController::class, 'submit'])->name('purchase-orders.submit');
         
         Route::resource('sales-orders', StaffSalesOrderController::class);
         

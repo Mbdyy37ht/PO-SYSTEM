@@ -3,7 +3,7 @@
         Edit Item
     </x-slot>
 
-    <div class="xl">
+    <div class="max-w-4xl mx-auto">
         <!-- Back Button -->
         <div class="mb-6">
             <a href="{{ route('admin.items.index') }}"

@@ -41,6 +41,7 @@ class PurchaseOrderController extends Controller
             'items.*.item_id' => 'required|exists:items,id',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
+            'action' => 'required|in:draft,submit',
         ]);
 
         DB::beginTransaction();
@@ -56,10 +57,23 @@ class PurchaseOrderController extends Controller
                 $total_amount += $item['quantity'] * $item['unit_price'];
             }
 
-            // Determine status based on amount
-            // PO >= 10.000.000 harus disetujui Admin/Manager
-            // PO < 10.000.000 cukup disetujui oleh Staff biasa
-            $status = $total_amount >= 10000000 ? 'pending' : 'draft';
+            // Determine status based on action
+            if ($validated['action'] === 'draft') {
+                // Save as draft - can be edited later
+                $status = 'draft';
+                $message = 'Purchase Order saved as draft successfully.';
+            } else {
+                // Submit - determine status based on amount
+                // PO >= 10.000.000 harus disetujui Admin/Manager
+                // PO < 10.000.000 auto-approved
+                if ($total_amount >= 10000000) {
+                    $status = 'pending';
+                    $message = 'Purchase Order submitted for approval successfully.';
+                } else {
+                    $status = 'approved';
+                    $message = 'Purchase Order approved automatically (< Rp 10,000,000).';
+                }
+            }
 
             // Create PO
             $purchaseOrder = PurchaseOrder::create([
@@ -71,6 +85,8 @@ class PurchaseOrderController extends Controller
                 'status' => $status,
                 'notes' => $validated['notes'],
                 'created_by' => Auth::id(),
+                'approved_by' => $status === 'approved' ? Auth::id() : null,
+                'approved_at' => $status === 'approved' ? now() : null,
             ]);
 
             // Create PO Details
@@ -88,7 +104,7 @@ class PurchaseOrderController extends Controller
             DB::commit();
 
             return redirect()->route('staff.purchase-orders.index')
-                ->with('success', 'Purchase Order created successfully.');
+                ->with('success', $message);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withInput()
@@ -133,6 +149,7 @@ class PurchaseOrderController extends Controller
             'items.*.item_id' => 'required|exists:items,id',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
+            'action' => 'required|in:draft,submit',
         ]);
 
         DB::beginTransaction();
@@ -143,8 +160,27 @@ class PurchaseOrderController extends Controller
                 $total_amount += $item['quantity'] * $item['unit_price'];
             }
 
-            // Determine status based on amount
-            $status = $total_amount >= 10000000 ? 'pending' : 'draft';
+            // Determine status based on action
+            if ($validated['action'] === 'draft') {
+                // Keep as draft
+                $status = 'draft';
+                $message = 'Purchase Order updated successfully.';
+                $approved_by = null;
+                $approved_at = null;
+            } else {
+                // Submit - determine status based on amount
+                if ($total_amount >= 10000000) {
+                    $status = 'pending';
+                    $message = 'Purchase Order submitted for approval successfully.';
+                    $approved_by = null;
+                    $approved_at = null;
+                } else {
+                    $status = 'approved';
+                    $message = 'Purchase Order approved automatically (< Rp 10,000,000).';
+                    $approved_by = Auth::id();
+                    $approved_at = now();
+                }
+            }
 
             // Update PO
             $purchaseOrder->update([
@@ -154,6 +190,8 @@ class PurchaseOrderController extends Controller
                 'total_amount' => $total_amount,
                 'status' => $status,
                 'notes' => $validated['notes'],
+                'approved_by' => $approved_by,
+                'approved_at' => $approved_at,
             ]);
 
             // Delete old details
@@ -174,7 +212,7 @@ class PurchaseOrderController extends Controller
             DB::commit();
 
             return redirect()->route('staff.purchase-orders.index')
-                ->with('success', 'Purchase Order updated successfully.');
+                ->with('success', $message);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withInput()
@@ -193,21 +231,5 @@ class PurchaseOrderController extends Controller
 
         return redirect()->route('staff.purchase-orders.index')
             ->with('success', 'Purchase Order deleted successfully.');
-    }
-
-    // Submit for approval (if >= 10 million)
-    public function submit(PurchaseOrder $purchaseOrder)
-    {
-        if ($purchaseOrder->status !== 'draft') {
-            return back()->with('error', 'Only draft Purchase Orders can be submitted.');
-        }
-
-        if ($purchaseOrder->total_amount >= 10000000) {
-            $purchaseOrder->update(['status' => 'pending']);
-            return redirect()->route('staff.purchase-orders.index')
-                ->with('success', 'Purchase Order submitted for approval.');
-        }
-
-        return back()->with('error', 'This Purchase Order does not require approval.');
     }
 }
