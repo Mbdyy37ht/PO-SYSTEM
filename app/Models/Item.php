@@ -15,6 +15,8 @@ class Item extends Model
         'name',
         'description',
         'unit',
+        'purchase_price',
+        'selling_price',
         'minimum_stock',
         'is_active',
     ];
@@ -22,6 +24,8 @@ class Item extends Model
     protected function casts(): array
     {
         return [
+            'purchase_price' => 'decimal:2',
+            'selling_price' => 'decimal:2',
             'minimum_stock' => 'integer',
             'is_active' => 'boolean',
         ];
