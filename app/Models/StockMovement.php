@@ -15,15 +15,23 @@ class StockMovement extends Model
         'warehouse_id',
         'reference_type',
         'reference_id',
+        'reference_number',
         'movement_type',
         'quantity',
+        'stock_before',
+        'stock_after',
         'notes',
+        'created_by',
+        'movement_date',
     ];
 
     protected function casts(): array
     {
         return [
             'quantity' => 'integer',
+            'stock_before' => 'integer',
+            'stock_after' => 'integer',
+            'movement_date' => 'datetime',
         ];
     }
 

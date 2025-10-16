@@ -65,8 +65,15 @@ class DeliveryApprovalController extends Controller
                     ->where('warehouse_id', $delivery->warehouse_id)
                     ->first();
 
+                // Get stock before
+                $stockBefore = $itemStock->quantity;
+
                 // Decrease stock
                 $itemStock->decrement('quantity', $detail->quantity_delivered);
+
+                // Refresh to get updated quantity
+                $itemStock->refresh();
+                $stockAfter = $itemStock->quantity;
 
                 // Create stock movement record
                 StockMovement::create([
@@ -74,9 +81,14 @@ class DeliveryApprovalController extends Controller
                     'warehouse_id' => $delivery->warehouse_id,
                     'reference_type' => 'Delivery',
                     'reference_id' => $delivery->id,
+                    'reference_number' => $delivery->delivery_number,
                     'movement_type' => 'out',
                     'quantity' => $detail->quantity_delivered,
+                    'stock_before' => $stockBefore,
+                    'stock_after' => $stockAfter,
                     'notes' => 'Stock out from Delivery: ' . $delivery->delivery_number,
+                    'created_by' => Auth::id(),
+                    'movement_date' => now(),
                 ]);
             }
 
