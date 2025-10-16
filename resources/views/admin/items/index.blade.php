@@ -99,7 +99,6 @@
             </div>
         </div>
     </div>
-
     @push('scripts')
         <!-- jQuery -->
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -175,11 +174,11 @@
                         $('.delete-form').off('submit').on('submit', function(e) {
                             e.preventDefault();
                             deleteForm = this;
-                            
+
                             // Get item name from the row
                             const itemName = $(this).closest('tr').find('td:eq(1)').text();
                             $('#deleteItemName').text(itemName);
-                            
+
                             // Show modal
                             $('#deleteModal').removeClass('hidden');
                         });

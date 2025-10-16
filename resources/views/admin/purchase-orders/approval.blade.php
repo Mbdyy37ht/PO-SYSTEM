@@ -3,12 +3,12 @@
         Purchase Order Approval
     </x-slot>
 
-    <div class="space-y-6">
+    <div class="space-y-4 sm:space-y-6">
         <!-- Header -->
-        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4">
             <div>
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-200">Purchase Order Approval</h2>
-                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Review and approve/reject pending purchase orders</p>
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200">Purchase Order Approval</h2>
+                <p class="mt-1 text-xs sm:text-sm text-gray-600 dark:text-gray-400">Review and approve/reject pending purchase orders</p>
             </div>
             <div class="flex items-center space-x-2">
                 <div class="px-4 py-2 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
@@ -20,11 +20,11 @@
         </div>
 
         <!-- Filter Card -->
-        <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-4">
-            <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+        <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-4 sm:p-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
-                    <select id="filterStatus" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <select id="filterStatus" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
                         <option value="pending" selected>Pending Only</option>
                         <option value="">All Status</option>
                         <option value="approved">Approved</option>
@@ -34,27 +34,27 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PO Number</label>
                     <input type="text" id="filterPONumber" placeholder="PO-2024-00001"
-                        class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Supplier</label>
                     <input type="text" id="filterSupplier" placeholder="Supplier name..."
-                        class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Min Amount</label>
                     <input type="number" id="filterMinAmount" placeholder="10000000"
-                        class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base">
                 </div>
                 <div class="flex items-end">
                     <button onclick="applyFilters()"
-                        class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200">
+                        class="w-full px-3 sm:px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
                         Apply Filters
                     </button>
                 </div>
                 <div class="flex items-end">
                     <button onclick="resetFilters()"
-                        class="w-full px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors duration-200">
+                        class="w-full px-3 sm:px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
                         Reset
                     </button>
                 </div>
@@ -79,7 +79,7 @@
 
         <!-- Purchase Orders Table Card -->
         <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg overflow-hidden">
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
                 <div class="overflow-x-auto">
                     <table id="approvalTable" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gray-50 dark:bg-gray-700">
